@@ -1,0 +1,97 @@
+So i have created an empty dataframe in jupyter called - Scorecard, here is the info about the dataframe
+<class 'pandas.core.frame.DataFrame'>
+Index: 0 entries
+Data columns (total 25 columns):
+ #   Column           Non-Null Count  Dtype  
+---  ------           --------------  -----  
+ 0   match_id         0 non-null      int32  
+ 1   player_id        0 non-null      int32  
+ 2   player           0 non-null      object 
+ 3   team             0 non-null      object 
+ 4   announced        0 non-null      bool   
+ 5   runs             0 non-null      int32  
+ 6   fours            0 non-null      int32  
+ 7   sixes            0 non-null      int32  
+ 8   balls_faced      0 non-null      int32  
+ 9   strike_rate      0 non-null      object 
+ 10  sr_bonus         0 non-null      int32  
+ 11  runs_bonus       0 non-null      int32  
+ 12  dismissed        0 non-null      bool   
+ 13  duck             0 non-null      bool   
+ 14  overs_bowled     0 non-null      float32
+ 15  economy          0 non-null      float32
+ 16  ec_bonus         0 non-null      int32  
+ 17  maiden_over      0 non-null      int32  
+ 18  wicket           0 non-null      int32  
+ 19  lbw_bowled       0 non-null      int32  
+ 20  wicket_bonus     0 non-null      int32  
+ 21  catch            0 non-null      int32  
+ 22  catch_bonus      0 non-null      int32  
+ 23  stumping_runout  0 non-null      int32  
+ 24  points           0 non-null      float32
+dtypes: bool(3), float32(3), int32(16), object(3)
+memory usage: 0.0+ bytes
+
+I want to populate every column in this dataframe with the below logic
+1. match_id - this should be equal to a variable in one of the above cells in my script that i have defined called - 'match_num'.
+2. player_id - this should be auto generated serial number based on the column player. this column should also serve as a primary key.
+3. player - All the unique names From columns - batsman, non_striker, bowler present in  dataframe 'Deliveries'(filtered on Scorecard.match_id = Deliveries.match_id) and column - fielder from Dataframe 'Dismissals'(filtered on Scorecard.match_id = Dismissals.match_id)
+4. team - column - 'team' corresponding to the 'Player' from respective dataframes Deliveries or Dismissals
+5. announced - If the 'Player' contains substring '(sub)' then false otherwise true
+6. runs - From dataframe Deliveries(filter on Scorecard.match_id = Deliveries.match_id and Scorecard.player = Deliveries.batsman) sum of column 'batsman_runs'
+7. fours - From dataframe Deliveries(filter on Scorecard.match_id = Deliveries.match_id and Scorecard.player = Deliveries.batsman) count of records where column 'batsman_runs' = 4 or 5
+8. sixes - From dataframe Deliveries(filter on Scorecard.match_id = Deliveries.match_id and Scorecard.player = Deliveries.batsman) count of records where column 'batsman_runs' = 6 or 7
+9. balls_faced - From dataframe Deliveries(filter on Scorecard.match_id = Deliveries.match_id and Scorecard.player = Deliveries.batsman) count of records where column 'wide_runs' = 0
+10. strike_rate = 'runs'*100/'balls_faced'
+11. sr_bonus = 
+WHEN 'balls_faced' >= 10 AND strike_rate > 170 THEN 6
+WHEN 'balls_faced' >= 10 AND 170 > strike_rate > 150 THEN 4
+WHEN 'balls_faced' >= 10 AND 150 > strike_rate > 130 THEN 2
+WHEN 'balls_faced' >= 10 AND 70 > strike_rate > 60 THEN -2
+WHEN 'balls_faced' >= 10 AND 60 > strike_rate > 50 THEN -4
+WHEN 'balls_faced' >= 10 AND strike_rate < 50 THEN -6 
+ELSE 0
+12. runs_bonus = 
+WHEN 'runs' BETWEEN 30 AND 49 THEN 4
+WHEN 'runs' BETWEEN 50 AND 99 THEN 8
+WHEN 'runs' >= 100 THEN 16
+ELSE 0
+13. dismissed - From Dataframe Dismissals(filter on Scorecard.match_id = Dismissals.match_id) and (Scorecard.player = Dismissals.player_dismissed) if present then true else false
+14. duck - if 'runs' = 0 and 'dismissed' = true then true else false
+15. overs_bowled - From dataframe Deliveries(filter on Scorecard.match_id = Deliveries.match_id and Scorecard.player = Deliveries.bowler) and Deliveries.wide_runs = 0 and Deliveries.noball_runs = 0 then these should be counted as 'valid_balls' (count of all such records). Save this 'valid_balls' variable somewhere as this will be used in further calculation. Now (valid balls)//6 + (valid balls)%6)*0.1 will be 'overs_bowled'
+16. economy - From dataframe Deliveries(filter on Scorecard.match_id = Deliveries.match_id and Scorecard.player = Deliveries.bowler) calculate sum of columns (Deliveries.wide_runs + Deliveries.noball_runs + Deliveries.batsman_runs) which should be known as 'runs_given'. Save this 'runs_given' variable somewhere as this will be used in further calculation. Now economy can be calculated as COALESCE(sum(runs_given)*6/sum(valid_balls)).
+17. ec_bonus - 
+WHEN 'overs_bowled' >= 2 AND 'economy' < 5 THEN 6
+WHEN 'overs_bowled' >= 2 AND 6 > 'economy' >= 5 THEN 4
+WHEN 'overs_bowled' >= 2 AND 7 > 'economy' >= 6 THEN 2
+WHEN 'overs_bowled' >= 2 AND 11 > 'economy' >= 10 THEN -2
+WHEN 'overs_bowled' >= 2 AND 12 > 'economy' >= 11 THEN -4
+WHEN 'overs_bowled' >= 2 AND 'economy' >=12 THEN -6 
+ELSE 0
+18. maiden_over - Calculate the 'runs_given' grouped by Deliveries.over . Count the number of records for every over where runs_given = 0 which will be maiden_over.
+19. wicket - From dataframe Dismissals(filter on Scorecard.match_id = Dismissals.match_id) and (Scorecard.player = Dismissals.bowler) and Dismissals.dismissal_kind = 'lbw' or 'bowled' or 'caught' or 'caught & bowled' or 'stumped' or 'hit wicket' then count of those records will be 'wicket'.
+20. lbw_bowled = From dataframe Dismissals(filter on Scorecard.match_id = Dismissals.match_id) and (Scorecard.player = Dismissals.bowler) and Dismissals.dismissal_kind = 'lbw' or 'bowled' then count of those records will be lbw_bowled.
+21. wicket_bonus = 
+WHEN 'wicket' >= 5 THEN 16
+WHEN 'wicket' >= 4 THEN 8
+WHEN 'wicket' >= 3 THEN 4 ELSE 0
+22. catch - From dataframe Dismissals(filter on Scorecard.match_id = Dismissals.match_id) and (Scorecard.player = Dismissals.fielder) and Dismissals.dismissal_kind = 'caught' then count of those records will be 'catch'.
+23. catch_bonus = From dataframe Dismissals(filter on Scorecard.match_id = Dismissals.match_id) and (Scorecard.player = Dismissals.fielder) and
+WHEN 'catch' >=3 THEN 4 ELSE 0 will be 'catch_bonus'.
+24. stumping_runout - From dataframe Dismissals(filter on Scorecard.match_id = Dismissals.match_id) and (Scorecard.player = Dismissals.fielder) and Dismissals.dismissal_kind = 'stumped' or 'run out' then count of those records will be 'stumping_runout'.
+25. points - Points will be calculated on by adding up all the numbers from previous columns as follows:
+If 'announced' is true THEN 4 ELSE 2 +
+'runs' +
+'fours' +
+'sixes'*2 +
+'sr_bonus' +
+'runs_bonus' +
+If 'duck' is true then -2 else 0 +
+'ec_bonus' +
+'maiden_over'*12 +
+'wicket'*25 +
+'lbw_bowled'*8 +
+'wicket_bonus' +
+'catch'*8 +
+'catch_bonus' +
+'stumping_runout'*12

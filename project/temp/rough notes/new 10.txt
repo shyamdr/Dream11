@@ -1,0 +1,24 @@
+Gpt, You will be given a pandas dataframe as "df_{team1}_team{2}" containing columns - Player, type, team, points, credits. the column description is mentioned below:
+Player - Name of a the cricket player that played in the match(string)
+Type - What kind of role is that particular player. It consists either of these 4 values: Wicket-keeper, Batsman, All-rounder, Bowler.(string)
+Team - A cricket match is played between 2 teams, hence it will be the team name the particular player belongs to.(string)
+Points - I have a system that basically converts the player performance into certain points, the only thing you need to know for this column is that more the points scored by a player in that match the better the performance of that player.
+Credits - This is an imaginary currency that is required to include a player in your team combination
+
+
+Now for example let's say there was a match between teams - CSK and MI. So some players around 11-15 from each team as in 22-30 in total will be scored on some paramters and so many rows will be present in the dataframe - df_csk_mi (note: the column - Team will also have these 2 fields only - 'csk' and 'mi'.
+
+Now based on this dataframe, I need you to create a Dream team. A dream team is basically a team of 11 players with the best combination possible( which when summed on all these 11 players points would give maximum number of points that could be possible) with considerations of these rules mentioned below:
+Rule 1 -  The dream team must contain atleast 4 players from either of the team
+Rule 2 - Maximum limit for Wicket-Keepers, Batsmans, All-rounders, Bowlers are - 2,5,3,5 respectively
+Rule 3 - Minimum limit for Wicket-Keepers, Batsmans, All-rounders, Bowlers are - 1,1,1,1 respectively.
+Rule 4 - Maximum of 100 Credits can be used to create the dream team but there is no minimum conditions.
+
+So I want you to create a python code which takes this dataframe as input and creates the dream team. Also I want the code to be feasible such that at any given point of time i change the maximum and minimum limits for Rule 1,2,3 and there are no changes in the code to create the dream team.
+
+
+----------------------------------------
+
+there are 3 dataframes - Scorecard, Deliveries, Dismissals. Scorecard.team needs to be updates by 1 unique values(there will always be 1 unique value for each player) from Deliveries.batting_team if for the particular row in Deliveries, Scorecard.player = (Deliveries.batmsan or Deliveries.non_striker)
+and it should be updated from Deliveries.bowling_team if for the particular row in Deliveries, Scorecard.player = (Deliveries.bowler)
+and it should be updated from Dismissals.bowling_team if for the particular row in Dismissals, Scorecard.player = (Dismissals.fielder)

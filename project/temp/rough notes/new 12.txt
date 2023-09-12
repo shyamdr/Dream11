@@ -1,0 +1,48 @@
+import pandas as pd
+
+# Filter the relevant data from the Deliveries and Dismissals dataframes
+deliveries = Deliveries[Deliveries['match_id'] == match_num]
+dismissals = Dismissals[Dismissals['match_id'] == match_num]
+
+# Get the list of all unique player names
+players = sorted(set(deliveries['batsman']).union(set(deliveries['non_striker'])).union(set(deliveries['bowler'])).union(set(dismissals['fielder'])))
+
+# Create an empty dataframe to store the scorecard data
+Scorecard = pd.DataFrame(columns=['match_id', 'player_id', 'player', 'team', 'announced', 'runs', 'fours', 'sixes', 'balls_faced', 'strike_rate', 'sr_bonus', 'runs_bonus', 'dismissed', 'duck', 'overs_bowled', 'economy', 'ec_bonus', 'maiden_over', 'wicket', 'lbw_bowled', 'wicket_bonus', 'catch', 'catch_bonus', 'stumping_runout', 'points'])
+
+# Populate the scorecard data for each player
+for i, player in enumerate(players):
+    # Add the match_id and player_id columns
+    row_data = {'match_id': match_num, 'player_id': i+1, 'player': player}
+    
+    # Add the team column
+    if player in deliveries['batsman'].unique() or player in deliveries['non_striker'].unique():
+        row_data['team'] = deliveries[deliveries['batsman'] == player].iloc[0]['batting_team']
+    else:
+        row_data['team'] = dismissals[dismissals['fielder'] == player].iloc[0]['batting_team']
+    
+    # Add the announced column
+    row_data['announced'] = '(sub)' not in player
+    
+    # Add the runs, fours, sixes, and balls_faced columns
+    batsman_runs = deliveries[deliveries['batsman'] == player]['batsman_runs']
+    row_data['runs'] = batsman_runs.sum()
+    row_data['fours'] = ((batsman_runs == 4) | (batsman_runs == 5)).sum()
+    row_data['sixes'] = ((batsman_runs == 6) | (batsman_runs == 7)).sum()
+    row_data['balls_faced'] = (deliveries[deliveries['batsman'] == player]['wide_runs'] == 0).sum()
+    
+    # Add the strike_rate and sr_bonus columns
+    if row_data['balls_faced'] >= 10:
+        row_data['strike_rate'] = row_data['runs'] * 100 / row_data['balls_faced']
+        if row_data['strike_rate'] > 170:
+            row_data['sr_bonus'] = 6
+        elif 170 > row_data['strike_rate'] > 150:
+            row_data['sr_bonus'] = 4
+        elif 150 > row_data['strike_rate'] > 130:
+            row_data['sr_bonus'] = 2
+        elif 70 > row_data['strike_rate'] > 60:
+            row_data['sr_bonus'] = -2
+        elif 60 > row_data['strike_rate'] > 50:
+            row_data['sr_bonus'] = -4
+        elif row_data['strike_rate'] < 50:
+            row_data['sr_bonus']
