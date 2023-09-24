@@ -1,0 +1,26 @@
+Requirements :
+
+1. Predict dream 11 teams for small league (risk- free)
+2. Give recommendations for Grand league (little risk)
+3. WASP (pre-match)
+
+Data requirements :
+
+1. Probable XI of both teams.
+2. Player past performance.
+3. Player form.
+4. Pitch report.
+5. Venue statistics.
+6. Player Combinations statistics.
+7. Player matchups
+8. Captain statistics.
+----------------------------------------------------------------------
+
+1. Probable XI of both teams : From cricbuzz webscrapping
+
+2. Player past performance. - Career, past 2 year
+
+Career : 
+ - Matches
+ - Innings
+ - 
