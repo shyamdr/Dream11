@@ -21,3 +21,25 @@ def upsert(engine, dataFrame, table, schema, pk_col=None, update_col=None):
         conn.exec_driver_sql("DROP TABLE IF EXISTS stg.temp_table")
         
     return stmt
+
+
+def insert_without_duplicate(engine, dataFrame, table, schema, conflict_col):
+    
+    if len(dataFrame)==0:
+        return("No records found.")
+    
+    dataFrame.to_sql("temp_table", con = engine, schema = "stg", method = "multi", if_exists="replace", index=False)
+    
+    col = list(dataFrame.columns)
+    insert_col_list = ", ".join([f'"{col_name}"' for col_name in col])
+    conflict_col_list = ", ".join([f'"{col_name}"' for col_name in conflict_col])
+    
+    stmt = f"INSERT INTO {schema}.{table} ({insert_col_list})\n"
+    stmt += f"SELECT {insert_col_list} FROM stg.temp_table\n"
+    stmt += f"ON CONFLICT ({conflict_col_list}) DO NOTHING;\n"
+
+    with engine.begin() as conn:
+        conn.exec_driver_sql(stmt)
+        conn.exec_driver_sql("DROP TABLE IF EXISTS stg.temp_table")
+        
+    return stmt
