@@ -1,7 +1,6 @@
-CREATE TABLE dwh.people
+CREATE TABLE stg.people
 (
-    id integer NOT NULL,
-	identifier text NOT NULL,
+    identifier text NOT NULL,
     name text NOT NULL,
     unique_name text NOT NULL,
     key_bcci text,
@@ -19,9 +18,8 @@ CREATE TABLE dwh.people
     key_opta text,
     key_opta_2 text,
     key_pulse text,
-    key_pulse_2 text,
-    CONSTRAINT people_pk PRIMARY KEY (identifier)
+    key_pulse_2 text
 );
 
-ALTER TABLE IF EXISTS dwh.people
+ALTER TABLE IF EXISTS stg.people
     OWNER to postgres;
