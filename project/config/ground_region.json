@@ -1,0 +1,50 @@
+{
+    "India": "Indian Subcontinent",
+    "Pakistan": "Indian Subcontinent",
+    "Sri Lanka": "Indian Subcontinent",
+    "Bangladesh": "Indian Subcontinent",
+    "Nepal": "Indian Subcontinent",
+
+    "Afghanistan": "Asia",
+    "United Arab Emirates": "Asia",
+    "UAE": "Asia",
+    
+    "England": "England and Wales",
+    "Wales": "England and Wales",
+
+    "Ireland": "Europe",
+    "Scotland": "Europe",
+    "Netherlands": "Europe",
+    
+    "Australia": "Australia and New Zealand",
+    "New Zealand": "Australia and New Zealand",
+    
+    "Jamaica": "West Indies",
+    "Trinidad and Tobago": "West Indies",
+    "Barbados": "West Indies",
+    "Windward Islands": "West Indies",
+    "Leeward Islands": "West Indies",
+    "West Indies": "West Indies",
+    "Grenada": "West Indies",
+    "Antigua": "West Indies",
+    "Barbuda": "West Indies",
+    "Antigua and Barbuda": "West Indies",
+    
+    "South Africa": "Southern Africa",
+    "Zimbabwe": "Southern Africa",
+    "Namibia": "Southern Africa",
+    "Uganda": "Southern Africa",
+    
+    "Malaysia": "East Asia-Pacific",
+    "Singapore": "East Asia-Pacific",
+    "Hong Kong SAR": "East Asia-Pacific",
+    "Hong Kong": "East Asia-Pacific",
+    "Indonesia": "East Asia-Pacific",
+
+    
+    "USA": "North America",
+    "Canada": "North America",
+    "United States of America": "North America",
+    "United States": "North America"
+  }
+  
