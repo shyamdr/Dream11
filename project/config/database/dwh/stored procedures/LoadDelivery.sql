@@ -7,13 +7,6 @@ CREATE OR REPLACE PROCEDURE dwh.loaddelivery(
 LANGUAGE 'plpgsql'
 AS $BODY$
 BEGIN
--------------- Add team details ----------------
-MERGE INTO dwh.team t
-USING (SELECT DISTINCT team FROM stg.delivery) s
-ON s.team = t.name
-WHEN NOT MATCHED THEN
-INSERT(name) VALUES(team);
-
 -------------- Create temp table ---------------
 DROP TABLE IF EXISTS tmp_delivery;
 CREATE TEMPORARY TABLE tmp_delivery AS
