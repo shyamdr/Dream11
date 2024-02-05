@@ -1,0 +1,2 @@
+This repository contains the files to create a database to store cricket data and use it further for analytics and building AI models for accurate cricket fantasy predictions.
+cricket data extraction is done from several sources such as cricsheet.org, popular cricket score websites such as cricbuzz, espncricinfo etc, several other apis are also used such as bing maps, weather apis for additional information
