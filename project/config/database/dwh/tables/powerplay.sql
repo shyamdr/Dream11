@@ -3,7 +3,7 @@ CREATE TABLE dwh.powerplay
     powerplay_id serial NOT NULL,
     match_id text,
     match_type text,
-    team text,
+    team_id smallint,
     type text,
     "from" numeric(4, 1),
     "to" numeric(4, 1),

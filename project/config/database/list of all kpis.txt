@@ -1,0 +1,65 @@
+General parameters :
+ - Match id
+ - Inning id
+ - event id
+ 
+Non - deterministic paramters (12 + weather) : 
+ - Team
+ - Event type (IPL, ICC, bilateral etc)
+ - match type (ODI/test/T20)
+ - Ground
+ - country
+ - Opposition
+ - Region
+ - Weather (how many parameters, frequency)
+ - Pitch (3 parameters - batting, pace, spin) (rated out of 5/10)
+ - Captain
+ - Date
+ - Player attributes (type, hand, role)
+
+ - Self pressure
+ - Situation pressure(already discussed)
+ - Previous outcome
+ - Balls since last boundary
+ 
+Batsman parameters (6) : 
+(Non-permonance parameters)
+ - batsman_id
+ - partner(non_striker)
+ - bowler
+ - bowler type
+ - bowler arm
+ - progression (10 balls for ODI, 5 balls for T20) ?seperate table?
+ 
+(Performance parameters) (14)
+ - runs
+ - balls_faced
+ - 1s
+ - 2s
+ - 3s
+ - other rbw(running between wickets)
+ - 4s
+ - 6s
+ - dismissal type
+ - Bat position
+ - Pressure index range{To be calculated as a function of tan^-1(x). within range of -10 to +10}. (8 ranges of interval 2.5?)
+ - supporting runs (rbw supporting partner)
+ - powerplay phase
+ - form
+ - ICC rating (experience, career performance - avg, strike rate, ball/boundary, dot ball count)
+ 
+Bowlers parameters :
+(Non-permonance parameters)
+ - Bowler id
+ - tandem bowler
+ - batsman batting hand
+ - IsLRCombo
+ - Spell
+
+ - balls bowled
+ - runs given
+ - wickets
+ - dot balls
+ - boundaries
+ - powerplay phase
+ - bowling end (Data unavailable)

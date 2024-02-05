@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS dwh.match_player
 (
     match_id text COLLATE pg_catalog."default",
+	name text COLLATE pg_catalog."default",
     player_id_num smallint,
     team_id smallint,
     is_captain boolean,
