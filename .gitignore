@@ -1,1 +1,5 @@
 project/config/PasswordManager.json
+project/config/pitchAI/comparative_score.xlsx
+project/config/pitchAI/keyword_score.xlsx
+project/config/pitchAI/negative_score.xlsx
+project/config/pitchAI/relevance_score.xlsx

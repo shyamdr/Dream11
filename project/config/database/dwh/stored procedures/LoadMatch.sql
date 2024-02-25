@@ -18,7 +18,7 @@ WHEN NOT MATCHED THEN
 -- add ground details
 MERGE INTO dwh.ground t
 USING (SELECT DISTINCT city, venue FROM stg.match) AS s
-ON s.city = t.city AND s.venue = t.venue
+ON COALESCE(s.city,t.city) = t.city AND s.venue = t.venue
 WHEN NOT MATCHED THEN
 	INSERT (city, venue)
 	VALUES (s.city, s.venue);
