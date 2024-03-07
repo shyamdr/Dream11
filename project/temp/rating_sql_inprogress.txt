@@ -1,7 +1,10 @@
--- Final match - 1384439
--- group stage - 1384396
-
-WITH team_winner AS (
+WITH all_players AS (
+SELECT
+	DISTINCT mp.match_id, del.inning, mp.team_id, mp.player_id_num
+FROM dwh.match_player mp
+INNER JOIN dwh.delivery del ON mp.match_id = del.match_id AND mp.team_id = del.team_id AND (mp.player_id_num = del.batter OR mp.player_id_num = del.non_striker)
+)
+,team_winner AS (
 SELECT 
 	m.match_type,
 	d.match_id, 
@@ -19,8 +22,7 @@ JOIN dwh.match m ON d.match_id = m.match_id and m.outcome_method IS NULL
 JOIN dwh.team t ON m.outcome_winner = t.name and d.team_id = t.team_id
 --WHERE d.match_id = '1384396'
 GROUP BY m.match_type, d.match_id, d.inning, d.team_id, m.match_type
-)
-
+) 
 , winning_score AS (
 SELECT
 	tw.*,
@@ -29,40 +31,79 @@ SELECT
 FROM team_winner tw
 JOIN dwh.resource r ON tw.total_balls_used = r.ball and tw.total_wickets = r.wicket_lost and tw.match_type = r.type
 )
-
+, rpb AS (
 SELECT
-	m.match_type, sub2.*, r.resource, ws.score_baseline
-	,CASE
-		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) <= 60 AND (sub2.running_score <  (ws.score_baseline * 1.1/5)) THEN ((ws.score_baseline * 1.1)/300)::NUMERIC(6,3)
-		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) <= 60 AND (sub2.running_score >= (ws.score_baseline * 1.1/5)) THEN ((ws.score_baseline-sub2.running_score)*1.0/(300-sub2.prev_state_running_ball+1))::NUMERIC(6,3)--ws.score_baseline-sub2.running_score--((ws.score_baseline-sub2.running_score)/(300-sub2.prev_state_running_ball+1))::NUMERIC(6,3)
-		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 60 AND 120 AND (sub2.running_score < ws.score_baseline) THEN ((ws.score_baseline-sub2.running_score)*1.0/(300-sub2.prev_state_running_ball+1))::NUMERIC(6,3)
-		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 120 AND 210 AND (sub2.running_score < ws.score_baseline) THEN ((ws.score_baseline-sub2.running_score)*0.8/(300-sub2.prev_state_running_ball+1))::NUMERIC(6,3)
-	END AS x
+	m.match_type, sub2.*, r.resource, ws.score_baseline,
+	CASE
+		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 0 AND 60 THEN (ws.score_baseline * 1.1/(300))::NUMERIC(6,3)
+		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 60 AND 120 THEN ((ws.score_baseline-
+																								 (ws.score_baseline * 1.1/(5)) --Runs in phase 1 : 0-10 overs
+																								)/240)::NUMERIC(6,3)
+		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 120 AND 210 THEN (((ws.score_baseline
+																								  -(ws.score_baseline * 1.1/(5)) 
+																								  -((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4) --Runs in phase 2 : 10-20 overs
+																								 )*0.8/2)/90)::NUMERIC(6,3)
+		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 210 AND 270 THEN (((ws.score_baseline
+																								  -(ws.score_baseline * 1.1/(5))
+																								  -((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4)
+																								  -((ws.score_baseline-(ws.score_baseline * 1.1/(5))-((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4))*0.8/2) --Runs in phase 3 : 20-35 overs
+																								 )*0.9*2/3)/60)::NUMERIC(6,3)
+		WHEN m.match_type = 'ODI' AND (sub2.prev_state_running_ball+1) BETWEEN 270 AND 300 THEN	((ws.score_baseline
+																								  -(ws.score_baseline * 1.1/(5))
+																								  -((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4)
+																								  -((ws.score_baseline-(ws.score_baseline * 1.1/(5))-((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4))*0.8/2)
+																								  -(((ws.score_baseline -(ws.score_baseline * 1.1/(5))-((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4)-((ws.score_baseline-(ws.score_baseline * 1.1/(5))-((ws.score_baseline-(ws.score_baseline * 1.1/(5)))/4))*0.8/2))*0.9*2/3))																			 
+																								 )/30)::NUMERIC(6,3)	
+	END AS rpb_in_range
 FROM
 (
 	SELECT 
-		sub1.match_id, sub1.inning, sub1.delivery_id, sub1.over, sub1.is_legal, sub1.legal_ball_num, is_wicket, running_score, curr_state_running_wicket, prev_state_running_ball,
+		sub1.match_id, sub1.inning, sub1.team_id, sub1.delivery_id, sub1.over, sub1.is_legal, sub1.extra_noball, sub1.legal_ball_num, is_wicket, batter, non_striker, run_batter, running_score, curr_state_running_wicket, prev_state_running_ball,
 		LAG(sub1.curr_state_running_wicket,1,0) OVER(PARTITION BY sub1.match_id, sub1.inning ORDER BY sub1.delivery_id) AS prev_state_running_wicket
 	FROM
 	(
 		SELECT 
-			match_id, inning, delivery_id, over,is_legal, legal_ball_num, is_wicket,
+			match_id, inning, team_id, delivery_id, over,is_legal, extra_noball, legal_ball_num, is_wicket, batter, non_striker, run_batter,
 			SUM(d.run_total) OVER (PARTITION BY match_id, inning ORDER BY delivery_id) AS running_score,
 			((over*6) + GREATEST(COALESCE(legal_ball_num,0)-1,0)) AS prev_state_running_ball,
 			SUM(CASE WHEN is_wicket THEN 1 ELSE 0 END) OVER (PARTITION BY match_id, inning ORDER BY delivery_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS curr_state_running_wicket
-		FROM dwh.delivery d
+		FROM dwh.delivery d	
 	) sub1
 ) sub2
 JOIN dwh.match m ON m.match_id = sub2.match_id and outcome_method IS NULL
 JOIN dwh.resource r ON r.type = m.match_type AND r.ball = sub2.prev_state_running_ball AND r.wicket_lost = sub2.prev_state_running_wicket
 JOIN winning_score ws ON sub2.match_id = ws.match_id
-WHERE sub2.match_id IN ('1384439')--('1384439', '1384396')
+WHERE sub2.match_id IN ('1384396', '1384439')--('1384439', '1384396')
 ORDER BY match_id, inning, delivery_id
-
-
--- select * from dwh.resource where wicket_lost = 4 and type = 'ODI'
---select * from dwh.delivery where match_id = '1384396' order by inning, delivery_id
-
--- select * from dwh.match where match_id = '1384396'
-
---select distinct outcome_method from dwh.match
+)
+, rpb_sum AS (
+SELECT 
+	sub3.match_type, sub3.match_id, sub3.team_id, sub3.inning, sub3.name, sub3.batter,
+	SUM(sub3.runs) AS runs, 
+	SUM(sub3.balls_faced) AS balls_faced, 
+	SUM(sub3.expected_runs) AS expected_runs,
+	MIN(sub3.prev_state_running_ball) AS first_ball_faced,
+	CASE
+		WHEN sub3.match_type = 'ODI' THEN 300-MIN(sub3.prev_state_running_ball)
+		WHEN sub3.match_type = 'T20' THEN 120-MIN(sub3.prev_state_running_ball)
+	END AS balls_remaining,
+	MAX(10-sub3.curr_state_running_wicket) AS wickets_in_hand,
+	MAX(sub3.resource) AS avail_resource
+FROM
+(
+	SELECT 
+		rpb.match_type, rpb.match_id, rpb.team_id, rpb.inning, rpb.batter, p.name,
+		SUM(rpb.run_batter) AS runs,
+		MIN(rpb.prev_state_running_ball) AS prev_state_running_ball,
+		CASE WHEN (rpb.is_legal OR rpb.extra_noball IS NOT NULL) THEN COUNT(1) END AS balls_faced,
+		CASE WHEN rpb.is_legal THEN SUM(rpb_in_range) END AS expected_runs,
+		MAX(rpb.resource) AS resource,
+		MIN(rpb.curr_state_running_wicket) AS curr_state_running_wicket
+	FROM rpb
+	JOIN dwh.people p ON rpb.batter = p.id
+	GROUP BY rpb.match_type, rpb.match_id, rpb.team_id, rpb.inning, p.name, rpb.batter, rpb.is_legal, rpb.extra_noball
+) sub3
+--WHERE sub3.match_id IN ('1384396', '1384439')
+GROUP BY sub3.match_type, sub3.match_id, sub3.team_id, sub3.inning, sub3.name, sub3.batter--, sub3.prev_state_running_ball
+ORDER BY match_id, inning, first_ball_faced
+)

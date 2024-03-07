@@ -1,9 +1,4 @@
--- PROCEDURE: dwh.loadmatch()
-
--- DROP PROCEDURE IF EXISTS dwh.loadmatch();
-
-CREATE OR REPLACE PROCEDURE dwh.loadmatch(
-	)
+CREATE OR REPLACE PROCEDURE dwh.LoadScorecardBatting()
 LANGUAGE 'plpgsql'
 AS $BODY$
 BEGIN
@@ -18,10 +13,12 @@ WHEN NOT MATCHED THEN
 -- add ground details
 MERGE INTO dwh.ground t
 USING (SELECT DISTINCT city, venue FROM stg.match) AS s
-ON COALESCE(s.city,t.city) = t.city AND s.venue = t.venue
+ON s.venue = t.venue
 WHEN NOT MATCHED THEN
 	INSERT (city, venue)
-	VALUES (s.city, s.venue);
+	VALUES (s.city, s.venue)
+WHEN MATCHED AND COALESCE(s.city,t.city) != t.city
+THEN UPDATE SET city = s.city;
 
 -- Truncate and load match record details
 DELETE FROM dwh.match WHERE match_id IN (SELECT DISTINCT match_id FROM stg.match);

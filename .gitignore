@@ -1,5 +1,13 @@
 project/config/PasswordManager.json
-project/config/pitchAI/comparative_score.xlsx
-project/config/pitchAI/keyword_score.xlsx
-project/config/pitchAI/negative_score.xlsx
-project/config/pitchAI/relevance_score.xlsx
+project/config/pitchAI/score/comparative_score.xlsx
+project/config/pitchAI/score/keyword_score.xlsx
+project/config/pitchAI/score/negative_score.xlsx
+project/config/pitchAI/score/relevance_score.xlsx
+project/config/rating/resource/resource_sheet.xlsx
+project/src/hyperparameters
+project/src/script/dev/.ipynb_checkpoints
+project/config/database/dwh/stored procedures/LoadScorecardBatting.sql
+project/config/database/dwh/stored procedures/LoadScorecardBowling.sql
+project/src/script/dev/Resource_Utilization.ipynb
+project/config/database/dwh/views/vw_resource_utilization.sql
+project/src/script/dev/Resource_Utilization.ipynb
