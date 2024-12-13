@@ -43,3 +43,23 @@ def insert_without_duplicate(engine, dataFrame, table, schema, conflict_col):
         conn.exec_driver_sql("DROP TABLE IF EXISTS stg.temp_table")
         
     return stmt
+
+def merge(engine, dataFrame, table, schema, merge_col, update_col):
+    
+    if len(dataFrame)==0:
+        return("No records found.")
+    
+    dataFrame.to_sql("temp_table", con = engine, schema = "stg", method = "multi", if_exists="replace", index=False)
+    col = list(dataFrame.columns)
+    insert_col_list = ", ".join([f'"{col_name}"' for col_name in col])
+
+    stmt = f"MERGE {schema}.{table} t\n"
+    stmt += f"USING stg.temp_table s ON s.{merge_col} = t.{merge_col}\n"
+    stmt += f"WHEN NOT MATCHED THEN INSERT INTO {schema}.{table} \n"
+    stmt += f"SELECT {insert_col_list} FROM stg.temp_table\n"
+    
+    with engine.begin() as conn:
+        conn.exec_driver_sql(stmt)
+        conn.exec_driver_sql("DROP TABLE IF EXISTS stg.temp_table")
+        
+    return stmt

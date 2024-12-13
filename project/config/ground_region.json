@@ -8,16 +8,50 @@
     "Afghanistan": "Asia",
     "United Arab Emirates": "Asia",
     "UAE": "Asia",
+	"Qatar": "Asia",
+	"China": "Asia",
+	"Kuwait": "Asia",
+	"Oman": "Asia",
     
     "England": "England and Wales",
     "Wales": "England and Wales",
+    "Guernsey": "England and Wales",
+    "United Kingdom": "England and Wales",
+	"Jersey": "England and Wales",
 
     "Ireland": "Europe",
     "Scotland": "Europe",
     "Netherlands": "Europe",
-    
+    "Italy": "Europe",
+    "Romania": "Europe",
+	"Hungary": "Europe",
+	"Serbia": "Europe",
+	"Spain": "Europe",
+	"Belgium": "Europe",
+	"Germany": "Europe",
+	"Portugal": "Europe",
+	"Finland": "Europe",
+	"Czechia": "Europe",
+	"France": "Europe",
+	"Gibraltar": "Europe",
+	"Malta": "Europe",
+	"Austria": "Europe",
+	"Denmark": "Europe",
+	"Bulgaria": "Europe",
+	"Luxembourg": "Europe",
+	"Sweden": "Europe",
+	"Cyprus": "Europe",
+	"St. Martin": "Europe",
+	"Ukraine": "Europe",
+	
+	
     "Australia": "Australia and New Zealand",
     "New Zealand": "Australia and New Zealand",
+	
+	"Vanuatu": "Southwest-Pacific",
+	"Papua New Guinea": "Southwest-Pacific",
+	"Samoa": "Southwest-Pacific",
+	"Fiji": "Southwest-Pacific",
     
     "Jamaica": "West Indies",
     "Trinidad and Tobago": "West Indies",
@@ -29,21 +63,43 @@
     "Antigua": "West Indies",
     "Barbuda": "West Indies",
     "Antigua and Barbuda": "West Indies",
-    
+    "Dominica": "West Indies",
+	"Saint Lucia": "West Indies",
+	"Saint Kitts and Nevis": "West Indies",
+
     "South Africa": "Southern Africa",
-    "Zimbabwe": "Southern Africa",
-    "Namibia": "Southern Africa",
-    "Uganda": "Southern Africa",
+	
+    "Zimbabwe": "Africa",
+    "Namibia": "Africa",
+    "Uganda": "Africa",
+    "Nigeria": "Africa",
+	"Kenya": "Africa",
+	"Rwanda": "Africa",
+	"Botswana": "Africa",
+	"Egypt": "Africa",
+	"Ghana": "Africa",
     
     "Malaysia": "East Asia-Pacific",
     "Singapore": "East Asia-Pacific",
     "Hong Kong SAR": "East Asia-Pacific",
     "Hong Kong": "East Asia-Pacific",
     "Indonesia": "East Asia-Pacific",
-    
+    "Thailand": "East Asia-Pacific",
+	"South Korea": "East Asia-Pacific",
+	"Singapore": "East Asia-Pacific",
+	"Japan": "East Asia-Pacific",
+    "Cambodia": "East Asia-Pacific",
+	"Philippines": "East Asia-Pacific",
+	
     "USA": "North America",
     "Canada": "North America",
     "United States of America": "North America",
-    "United States": "North America"
-  }
+    "United States": "North America",
+    "Mexico": "North America",
+	"Guyana": "North America",
+	"Bermuda": "North America",
+	"Saint Vincent and the Grenadines": "North America",
+
+	"Argentina": "South America"
+}
   
